@@ -1,29 +1,38 @@
 {
-	"cnn": {
-		"link": "http://edition.cnn.com/"
-	},
-	"bbc": {
-		"rss": "http://feeds.bbci.co.uk/news/rss.xml",
-		"link": "http://www.bbc.com/"
-	},
-	"theguardian": {
-		"rss": "https://www.theguardian.com/uk/rss",
-		"link": "https://www.theguardian.com/international"
-	},
-  "breitbart": {
-    "link": "http://www.breitbart.com/"
+  "elinformador": {
+      "rss": "https://www.informador.mx/rss/ultimas-noticias.xml",
+      "link": "https://www.informador.mx/"
   },
-  "infowars": {
-    "link": "https://www.infowars.com/"
+  "eloccidental": {
+      "rss": "https://www.eloccidental.com.mx/feed",
+      "link": "https://www.eloccidental.com.mx/"
   },
-  "foxnews": {
-    "link": "http://www.foxnews.com/"
+  "pagina24jalisco": {
+      "link": "http://pagina24jalisco.com.mx/"
   },
-  "nbcnews": {
-    "link": "http://www.nbcnews.com/"
+  "publimetroguadalajara": {
+      "rss": "https://www.publimetro.com.mx/mx/rss/global.xml",
+      "link": "https://www.readmetro.com/es/mexico/guadalajara/"
   },
-  "washingtonpost": {
-    "rss": "http://feeds.washingtonpost.com/rss/world",
-    "link": "https://www.washingtonpost.com/"
+  "eldiariontr": {
+      "link": "http://www.ntrguadalajara.com/"
+  },
+  "vallartaopina": {
+      "link": "http://vallartaopina.net/"
+  },
+  "reforma": {
+      "rss": "https://www.reforma.com/rss/justicia.xml",
+      "link": "https://www.reforma.com/"
+  },
+  "laprensa": {
+      "rss": "https://www.la-prensa.com.mx/feed",
+      "link": "https://www.la-prensa.com.mx/"
+  },
+  "eluniversal": {
+      "rss": "http://www.eluniversal.com.mx/rss.xml",
+      "link": "http://www.eluniversal.com.mx/"
+  },
+  "elgrafico": {
+      "link": "http://www.elgrafico.mx/"
   }
 }

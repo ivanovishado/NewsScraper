@@ -1,9 +1,20 @@
-import feedparser as fp
-import json
-import newspaper
-from newspaper import Article
-from time import mktime
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+News scraper, adds scraped articles to a database.
+"""
+__title__ = 'mmld'
+__author__ = 'Ivan Fernando Galaviz Mendoza'
+
+from tzlocal import get_localzone
 from datetime import datetime
+from time import mktime
+import json
+import pytz
+from pymongo import MongoClient
+from newspaper import Article
+import feedparser as fp
+import newspaper
 
 # Set the limit for number of articles to download
 LIMIT = 4
@@ -11,9 +22,24 @@ LIMIT = 4
 data = {}
 data['newspapers'] = {}
 
+articles = []
+
 # Loads the JSON files with news sites
-with open('NewsPapers.json') as data_file:
+with open('NewsPapers2.json') as data_file:
     companies = json.load(data_file)
+
+
+def get_utc(timestamp):
+    """Converts a timestamp to UTC."""
+    local = pytz.timezone(get_localzone())
+    naive = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+    local_dt = local.localize(naive, is_dst=None)
+    return local_dt.astimezone(pytz.utc)
+
+
+# Initialize database connection
+client = MongoClient()
+db = client.test
 
 count = 1
 
@@ -36,22 +62,27 @@ for company, value in companies.items():
             if hasattr(entry, 'published'):
                 if count > LIMIT:
                     break
-                article = {}
-                article['link'] = entry.link
-                date = entry.published_parsed
-                article['published'] = datetime.fromtimestamp(mktime(date)).isoformat()
                 try:
-                    content = Article(entry.link)
+                    content = Article(entry.link, fetch_images=False)
                     content.download()
                     content.parse()
+                    content.nlp()
                 except Exception as e:
                     # If the download for some reason fails (ex. 404) the script will continue downloading
                     # the next article.
                     print(e)
                     print("continuing...")
                     continue
-                article['title'] = content.title
-                article['text'] = content.text
+                article = {'newspaper': company,
+                           'title': content.title,
+                           'text': content.text,
+                           'tags': list(content.tags),
+                           'link': entry.link,
+                           'published': datetime.utcfromtimestamp(mktime(
+                               entry.published_parsed)),
+                           'extracted': datetime.utcnow(),
+                           'topics': []}
+                db.test.insert_one(article)
                 newsPaper['articles'].append(article)
                 print(count, "articles downloaded from", company, ", url: ", entry.link)
                 count = count + 1
@@ -59,7 +90,7 @@ for company, value in companies.items():
         # This is the fallback method if a RSS-feed link is not provided.
         # It uses the python newspaper library to extract articles
         print("Building site for ", company)
-        paper = newspaper.build(value['link'], memoize_articles=False)
+        paper = newspaper.build(value['link'], language='es')
         newsPaper = {
             "link": value['link'],
             "articles": []
@@ -79,18 +110,22 @@ for company, value in companies.items():
             # After 10 downloaded articles from the same newspaper without publish date, the company will be skipped.
             if content.publish_date is None:
                 print(count, " Article has date of type None...")
-                noneTypeCount = noneTypeCount + 1
+                noneTypeCount += 1
                 if noneTypeCount > 10:
                     print("Too many noneType dates, aborting...")
                     noneTypeCount = 0
                     break
                 count = count + 1
                 continue
-            article = {}
-            article['title'] = content.title
-            article['text'] = content.text
-            article['link'] = content.url
-            article['published'] = content.publish_date.isoformat()
+            article = {'newspaper': company,
+                       'title': content.title,
+                       'text': content.text,
+                       'tags': list(content.tags),
+                       'link': content.url,
+                       'published': get_utc(content.publish_date),
+                       'extracted': datetime.utcnow(),
+                       'topics': []}
+            db.test.insert_one(article)
             newsPaper['articles'].append(article)
             print(count, "articles downloaded from", company, " using newspaper, url: ", content.url)
             count = count + 1
@@ -98,13 +133,13 @@ for company, value in companies.items():
     count = 1
     data['newspapers'][company] = newsPaper
 
+# Close DB connection
+client.close()
+
 # Finally it saves the articles as a JSON-file.
+"""
 try:
     with open('scraped_articles.json', 'w') as outfile:
         json.dump(data, outfile)
 except Exception as e: print(e)
-
-
-
-
-
+"""

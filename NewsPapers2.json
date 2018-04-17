@@ -1,0 +1,10 @@
+{
+  "El Informador": {
+      "rss": "https://www.informador.mx/rss/ultimas-noticias.xml",
+      "link": "https://www.informador.mx/"
+  },
+  "El Occidental": {
+      "rss": "https://www.eloccidental.com.mx/rss.xml",
+      "link": "https://www.eloccidental.com.mx/"
+  }
+}
