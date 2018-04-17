@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Flask app for searching scraped news.
+Flask app for querying scraped news.
 """
 __title__ = 'mmld'
 __author__ = 'Ivan Fernando Galaviz Mendoza'
 
 from flask import Flask, render_template
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, SubmitField, validators, SelectField
+from wtforms import StringField, TextAreaField, SubmitField, validators, \
+    SelectField
 from wtforms.fields.html5 import DateField
 from flask_pymongo import PyMongo
 from config import Config
@@ -27,17 +28,17 @@ class NewsSearchForm(FlaskForm):
     newspaper = StringField('Newspaper', validators=(validators.Optional(),))
     title = StringField('Title', validators=(validators.Optional(),))
     content = TextAreaField('Content', validators=(validators.Optional(),))
-#    state = SelectField('State', choices=)
-    pub_date_start = DateField(START_DATE_LABEL,
+    #    state = SelectField('State', choices=)
+    pub_date_from = DateField(START_DATE_LABEL,
                                validators=(validators.Optional(),),
                                default="")
-    pub_date_end = DateField(END_DATE_LABEL,
+    pub_date_to = DateField(END_DATE_LABEL,
                              validators=(validators.Optional(),),
                              default="")
-    extract_date_start = DateField(START_DATE_LABEL,
+    extract_date_from = DateField(START_DATE_LABEL,
                                    validators=(validators.Optional(),),
                                    default="")
-    extract_date_end = DateField(END_DATE_LABEL,
+    extract_date_to = DateField(END_DATE_LABEL,
                                  validators=(validators.Optional(),),
                                  default="")
 
@@ -54,26 +55,34 @@ def submit():
 
 @app.route('/results')
 def search_results(search):
-    query_dict = {}
+    query = {}
 
     newspaper_data = search.newspaper.data
     title_data = search.title.data
     content_data = search.content.data
+    pub_date_from_data = search.pub_date_from.data
+    pub_date_to_data = search.pub_date_to.data
+    extract_date_from_data = search.extract_date_from.data
+    extract_date_to_data = search.extract_date_to.data
 
     if newspaper_data is not "":
-        query_dict['newspaper'] = newspaper_data
+        query['newspaper'] = newspaper_data
     if title_data is not "":
-        query_dict['title'] = title_data
+        query['title'] = title_data
     if content_data is not "":
-        query_dict['content'] = content_data
-    if search.pub_date_start.data is not None \
-        and search.pub_date_end.data is not None:
-        pass
+        query['content'] = content_data
+    if pub_date_from_data is not None and pub_date_to_data is not None:
+        query['published'] = {
+            '$gte': pub_date_from_data,
+            '$lt': pub_date_to_data
+        }
+    if extract_date_from_data is not None and extract_date_to_data is not None:
+        query['extracted'] = {
+            '$gte': extract_date_from_data,
+            '$lt': extract_date_to_data
+        }
 
-    print("date= ", search.pub_date_start.data)
-    print("date2= ", search.pub_date_end.data)
-
-    items = mongo.db.test.find(query_dict)
+    items = mongo.db.test.find(query)
     table = NewsTable(items)
 
     return render_template('results.html', table=table)
