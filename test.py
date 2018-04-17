@@ -49,7 +49,7 @@ def submit():
     form = NewsSearchForm()
     if form.validate_on_submit():
         return search_results(form)
-    return render_template('submit.html', title='News Search', form=form)
+    return render_template('submit.html', form=form)
 
 
 @app.route('/results')
@@ -60,11 +60,11 @@ def search_results(search):
     title_data = search.title.data
     content_data = search.content.data
 
-    if newspaper_data is not None:
+    if newspaper_data is not "":
         query_dict['newspaper'] = newspaper_data
-    if title_data is not None:
+    if title_data is not "":
         query_dict['title'] = title_data
-    if content_data is not None:
+    if content_data is not "":
         query_dict['content'] = content_data
     if search.pub_date_start.data is not None \
         and search.pub_date_end.data is not None:

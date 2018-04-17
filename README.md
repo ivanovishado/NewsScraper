@@ -5,6 +5,12 @@ and scrape each site listed in the file.
 
 For more info read comments in `NewsScraper.py`.
 
+# Usage
+To run this project, you must create a virtual environment,
+installing the packages in `requirements.txt` - coming soon!
+
+You also need to have a MongoDB server running in order to save the scraped articles.  
+
 ## Libraries
 This script uses the following libraries:
 

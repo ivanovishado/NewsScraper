@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <title>News Search</title>
+    <h1>News Search</h1>
+    <form action="" method="POST">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.newspaper.label }}<br>
+        {{ form.newspaper(size=15) }}<br>
+        {% for error in form.newspaper.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.title.label }}<br>
+        {{ form.title(size=20) }}<br>
+        {% for error in form.title.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.content.label }}<br>
+        {{ form.content }}<br>
+        {% for error in form.content.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        Publication Date<br>
+        {{ form.pub_date_start.label }}<tab2>{{ form.pub_date_end.label }}</tab2><br>
+        {{ form.pub_date_start(class_='datepicker') }}{{ form.pub_date_end(class_='datepicker') }}<br>
+        {% for error in form.pub_date_start.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+        {% for error in form.pub_date_end.errors %}
+            <tabl><span style="color: red;">[{{ error }}]</span></tabl>
+        {% endfor %}
+    </p>
+    <p>
+        Extract Date<br>
+        {{ form.extract_date_start.label }}<tab2>{{ form.extract_date_end.label }}</tab2><br>
+        {{ form.extract_date_start(class_='datepicker') }}{{ form.extract_date_end(class_='datepicker') }}<br>
+        {% for error in form.extract_date_start.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+        {% for error in form.extract_date_end.errors %}
+            <tab1><span style="color: red;">[{{ error }}]</span></tab1>
+        {% endfor %}
+    </p>
+    <p>{{ form.submit() }}</p>
+</form>
+{% endblock %}
