@@ -28,23 +28,23 @@
     </p>
     <p>
         Publication Date<br>
-        {{ form.pub_date_start.label }}<tab2>{{ form.pub_date_end.label }}</tab2><br>
-        {{ form.pub_date_start(class_='datepicker') }}{{ form.pub_date_end(class_='datepicker') }}<br>
-        {% for error in form.pub_date_start.errors %}
+        {{ form.pub_date_from.label }}<tab2>{{ form.pub_date_to.label }}</tab2><br>
+        {{ form.pub_date_from(class_='datepicker') }}{{ form.pub_date_to(class_='datepicker') }}<br>
+        {% for error in form.pub_date_from.errors %}
             <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
-        {% for error in form.pub_date_end.errors %}
+        {% for error in form.pub_date_to.errors %}
             <tabl><span style="color: red;">[{{ error }}]</span></tabl>
         {% endfor %}
     </p>
     <p>
         Extract Date<br>
-        {{ form.extract_date_start.label }}<tab2>{{ form.extract_date_end.label }}</tab2><br>
-        {{ form.extract_date_start(class_='datepicker') }}{{ form.extract_date_end(class_='datepicker') }}<br>
-        {% for error in form.extract_date_start.errors %}
+        {{ form.extract_date_from.label }}<tab2>{{ form.extract_date_to.label }}</tab2><br>
+        {{ form.extract_date_from(class_='datepicker') }}{{ form.extract_date_to(class_='datepicker') }}<br>
+        {% for error in form.extract_date_from.errors %}
             <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
-        {% for error in form.extract_date_end.errors %}
+        {% for error in form.extract_date_to.errors %}
             <tab1><span style="color: red;">[{{ error }}]</span></tab1>
         {% endfor %}
     </p>
