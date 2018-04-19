@@ -14,6 +14,7 @@ from wtforms.fields.html5 import DateField
 from flask_pymongo import PyMongo
 from config import Config
 from tables import NewsTable
+import datetime
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -31,16 +32,16 @@ class NewsSearchForm(FlaskForm):
     #    state = SelectField('State', choices=)
     pub_date_from = DateField(START_DATE_LABEL,
                                validators=(validators.Optional(),),
-                               default="")
+                               default=datetime.date.today())
     pub_date_to = DateField(END_DATE_LABEL,
                              validators=(validators.Optional(),),
-                             default="")
+                             default=datetime.date.today())
     extract_date_from = DateField(START_DATE_LABEL,
                                    validators=(validators.Optional(),),
-                                   default="")
+                                   default=datetime.date.today())
     extract_date_to = DateField(END_DATE_LABEL,
                                  validators=(validators.Optional(),),
-                                 default="")
+                                 default=datetime.date.today())
 
     submit = SubmitField('Submit')
 
