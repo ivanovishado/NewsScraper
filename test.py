@@ -6,18 +6,20 @@ Flask app for querying scraped news.
 __title__ = 'mmld'
 __author__ = 'Ivan Fernando Galaviz Mendoza'
 
-from flask import Flask, render_template
-from flask_wtf import FlaskForm
+import datetime
 from wtforms import StringField, TextAreaField, SubmitField, validators, \
     SelectField
 from wtforms.fields.html5 import DateField
+from flask import Flask, render_template
+from flask_navigation import Navigation
 from flask_pymongo import PyMongo
-from config import Config
+from flask_wtf import FlaskForm
 from tables import NewsTable
-import datetime
+from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
+nav = Navigation(app)
 
 mongo = PyMongo(app)
 
@@ -46,12 +48,17 @@ class NewsSearchForm(FlaskForm):
     submit = SubmitField('Submit')
 
 
+nav.Bar('top', [
+    nav.Item('Home', 'submit')
+])
+
+
 @app.route('/', methods=('GET', 'POST'))
 def submit():
     form = NewsSearchForm()
     if form.validate_on_submit():
         return search_results(form)
-    return render_template('submit.html', form=form)
+    return render_template('index.html', form=form)
 
 
 @app.route('/results')

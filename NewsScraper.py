@@ -17,7 +17,6 @@ import feedparser as fp
 import newspaper
 
 # TODO: Renombrar partes de la base de datos adecuadamente
-# TODO: Factorizar código
 
 # Set the limit for number of articles to download
 LIMIT = 4
