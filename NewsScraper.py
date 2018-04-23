@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-News scraper, adds scraped articles to a database.
+News scraper, scrapes articles from a newspaper then adds them to a database.
 """
 __title__ = 'mmld'
 __author__ = 'Ivan Fernando Galaviz Mendoza'
@@ -15,8 +15,12 @@ from pymongo import MongoClient
 from newspaper import Article
 import feedparser as fp
 import newspaper
+import constants
 
-# TODO: Renombrar partes de la base de datos adecuadamente
+# TODO: Crear clase para los estados con sus periódicos
+# TODO: Asignar timezones pertinentes al estado -- time.localtime().tm_isdst
+# TODO: Diseñar base de datos para guardar por [estado][periodico] -> articulos
+# TODO: Crear diccionario temporal para cuando se pierda la conexión con la base de datos
 
 # Set the limit for number of articles to download
 LIMIT = 4
@@ -75,16 +79,16 @@ for company, value in companies.items():
                     print(e)
                     print("continuing...")
                     continue
-                article = {'newspaper': company,
-                           'title': content.title,
-                           'text': content.text,
-                           'tags': list(content.tags),
-                           'link': entry.link,
-                           'published': datetime.utcfromtimestamp(mktime(
-                               entry.published_parsed)),
-                           'extracted': datetime.utcnow(),
-                           'topics': []}
-                db.test.insert_one(article)
+                article = {constants.NEWSPAPER: company,
+                           constants.TITLE: content.title,
+                           constants.TEXT: content.text,
+                           constants.TAGS: list(content.tags),
+                           constants.LINK: entry.link,
+                           constants.PUB_DATE: datetime.utcfromtimestamp(
+                               mktime(entry.published_parsed)),
+                           constants.EXTRACT_DATE: datetime.utcnow(),
+                           constants.CATEGORY: None}
+                #db.test.insert_one(article)
                 newsPaper['articles'].append(article)
                 print(count, "articles downloaded from", company, ", url: ", entry.link)
                 count = count + 1

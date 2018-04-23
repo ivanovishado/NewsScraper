@@ -1,0 +1,8 @@
+NEWSPAPER = 'newspaper'
+TITLE = 'title'
+TEXT = 'text'
+TAGS = 'tags'
+LINK = 'link'
+PUB_DATE = 'pub_date'
+EXTRACT_DATE = 'extract_date'
+CATEGORY = 'category'

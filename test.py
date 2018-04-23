@@ -16,12 +16,22 @@ from flask_pymongo import PyMongo
 from flask_wtf import FlaskForm
 from tables import NewsTable
 from config import Config
+import constants
 
 app = Flask(__name__)
 app.config.from_object(Config)
 nav = Navigation(app)
 
 mongo = PyMongo(app)
+
+
+class CustomDateField(DateField):
+    def __init__(self, label, **kwargs):
+        super().__init__(label,
+                         validators=(validators.Optional(),),
+                         default=datetime.date.today(),
+                         **kwargs)
+
 
 
 class NewsSearchForm(FlaskForm):
@@ -32,18 +42,19 @@ class NewsSearchForm(FlaskForm):
     title = StringField('Title', validators=(validators.Optional(),))
     content = TextAreaField('Content', validators=(validators.Optional(),))
     #    state = SelectField('State', choices=)
+    pub_date_from = CustomDateField(START_DATE_LABEL)
     pub_date_from = DateField(START_DATE_LABEL,
-                               validators=(validators.Optional(),),
-                               default=datetime.date.today())
+                              validators=(validators.Optional(),),
+                              default=datetime.date.today())
     pub_date_to = DateField(END_DATE_LABEL,
-                             validators=(validators.Optional(),),
-                             default=datetime.date.today())
+                            validators=(validators.Optional(),),
+                            default=datetime.date.today())
     extract_date_from = DateField(START_DATE_LABEL,
-                                   validators=(validators.Optional(),),
-                                   default=datetime.date.today())
+                                  validators=(validators.Optional(),),
+                                  default=datetime.date.today())
     extract_date_to = DateField(END_DATE_LABEL,
-                                 validators=(validators.Optional(),),
-                                 default=datetime.date.today())
+                                validators=(validators.Optional(),),
+                                default=datetime.date.today())
 
     submit = SubmitField('Submit')
 
@@ -74,18 +85,18 @@ def search_results(search):
     extract_date_to_data = search.extract_date_to.data
 
     if newspaper_data is not "":
-        query['newspaper'] = newspaper_data
+        query[constants.NEWSPAPER] = newspaper_data
     if title_data is not "":
-        query['title'] = title_data
+        query[constants.TITLE] = title_data
     if content_data is not "":
-        query['content'] = content_data
+        query[constants.TEXT] = content_data
     if pub_date_from_data is not None and pub_date_to_data is not None:
-        query['published'] = {
+        query[constants.PUB_DATE] = {
             '$gte': pub_date_from_data,
             '$lt': pub_date_to_data
         }
     if extract_date_from_data is not None and extract_date_to_data is not None:
-        query['extracted'] = {
+        query[constants.EXTRACT_DATE] = {
             '$gte': extract_date_from_data,
             '$lt': extract_date_to_data
         }
