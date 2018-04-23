@@ -4,13 +4,14 @@
     <head></head>
     <body>
         {% block navbar %}
-          <ul>
-            {% for item in nav['top'] %}
-            <li class="{{ 'active' if item.is_active else '' }}">
-              <a href="{{ item.url }}">{{ item.label }}</a>
-            </li>
-            {% endfor %}
-          </ul>
+            <ul>
+                {% for item in nav.top %}
+                <li class="{{ 'active' if item.is_active else '' }}"
+                    style="{{ 'float:right' if item.label == 'About' else '' }}">
+                    {{ item }}
+                </li>
+                {% endfor %}
+            </ul>
         {% endblock %}
 
         {% with messages = get_flashed_messages() %}

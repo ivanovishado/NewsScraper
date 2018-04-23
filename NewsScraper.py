@@ -88,7 +88,7 @@ for company, value in companies.items():
                                mktime(entry.published_parsed)),
                            constants.EXTRACT_DATE: datetime.utcnow(),
                            constants.CATEGORY: None}
-                #db.test.insert_one(article)
+                db.test.insert_one(article)
                 newsPaper['articles'].append(article)
                 print(count, "articles downloaded from", company, ", url: ", entry.link)
                 count = count + 1

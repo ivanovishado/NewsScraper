@@ -9,7 +9,7 @@ __author__ = 'Ivan Fernando Galaviz Mendoza'
 import datetime
 from wtforms import StringField, TextAreaField, SubmitField, validators, \
     SelectField
-from wtforms.fields.html5 import DateField
+from wtforms.fields.html5 import DateTimeLocalField
 from flask import Flask, render_template
 from flask_navigation import Navigation
 from flask_pymongo import PyMongo
@@ -25,15 +25,6 @@ nav = Navigation(app)
 mongo = PyMongo(app)
 
 
-class CustomDateField(DateField):
-    def __init__(self, label, **kwargs):
-        super().__init__(label,
-                         validators=(validators.Optional(),),
-                         default=datetime.date.today(),
-                         **kwargs)
-
-
-
 class NewsSearchForm(FlaskForm):
     START_DATE_LABEL = 'Start Date'
     END_DATE_LABEL = 'End Date'
@@ -42,25 +33,21 @@ class NewsSearchForm(FlaskForm):
     title = StringField('Title', validators=(validators.Optional(),))
     content = TextAreaField('Content', validators=(validators.Optional(),))
     #    state = SelectField('State', choices=)
-    pub_date_from = CustomDateField(START_DATE_LABEL)
-    pub_date_from = DateField(START_DATE_LABEL,
-                              validators=(validators.Optional(),),
-                              default=datetime.date.today())
-    pub_date_to = DateField(END_DATE_LABEL,
-                            validators=(validators.Optional(),),
-                            default=datetime.date.today())
-    extract_date_from = DateField(START_DATE_LABEL,
-                                  validators=(validators.Optional(),),
-                                  default=datetime.date.today())
-    extract_date_to = DateField(END_DATE_LABEL,
-                                validators=(validators.Optional(),),
-                                default=datetime.date.today())
+    pub_date_from = DateTimeLocalField(START_DATE_LABEL,
+                                       validators=(validators.Optional(),))
+    pub_date_to = DateTimeLocalField(END_DATE_LABEL,
+                                     validators=(validators.Optional(),))
+    extract_date_from = DateTimeLocalField(START_DATE_LABEL,
+                                           validators=(validators.Optional(),))
+    extract_date_to = DateTimeLocalField(END_DATE_LABEL,
+                                         validators=(validators.Optional(),))
 
     submit = SubmitField('Submit')
 
 
 nav.Bar('top', [
-    nav.Item('Home', 'submit')
+    nav.Item('News Search', 'submit'),
+    nav.Item('About', 'about')
 ])
 
 
@@ -70,6 +57,12 @@ def submit():
     if form.validate_on_submit():
         return search_results(form)
     return render_template('index.html', form=form)
+
+
+@app.route('/about')
+def about():
+    # TODO: crear página "about"
+    pass
 
 
 @app.route('/results')

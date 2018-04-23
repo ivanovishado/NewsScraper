@@ -2,7 +2,7 @@
 
 {% block content %}
     <title>News Search</title>
-    <h1>News Search</h1>
+    <h1>{{ nav.top.current_item.label }}</h1>
     <form action="" method="POST">
     {{ form.hidden_tag() }}
     <p>
@@ -28,7 +28,7 @@
     </p>
     <p>
         Publication Date<br>
-        {{ form.pub_date_from.label }}<tab2>{{ form.pub_date_to.label }}</tab2><br>
+        {{ form.pub_date_from.label }}<tab3>{{ form.pub_date_to.label }}</tab3><br>
         {{ form.pub_date_from(class_='datepicker') }}{{ form.pub_date_to(class_='datepicker') }}<br>
         {% for error in form.pub_date_from.errors %}
             <span style="color: red;">[{{ error }}]</span>
@@ -39,13 +39,13 @@
     </p>
     <p>
         Extract Date<br>
-        {{ form.extract_date_from.label }}<tab2>{{ form.extract_date_to.label }}</tab2><br>
+        {{ form.extract_date_from.label }}<tab3>{{ form.extract_date_to.label }}</tab3><br>
         {{ form.extract_date_from(class_='datepicker') }}{{ form.extract_date_to(class_='datepicker') }}<br>
         {% for error in form.extract_date_from.errors %}
             <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
         {% for error in form.extract_date_to.errors %}
-            <tab1><span style="color: red;">[{{ error }}]</span></tab1>
+            <tab3><span style="color: red;">[{{ error }}]</span></tab3>
         {% endfor %}
     </p>
     <p>{{ form.submit() }}</p>

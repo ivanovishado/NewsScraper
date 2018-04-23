@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Constants for maintaining order between the scraper and the web app.
+"""
+
 NEWSPAPER = 'newspaper'
 TITLE = 'title'
 TEXT = 'text'
