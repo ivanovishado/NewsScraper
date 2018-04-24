@@ -9,7 +9,7 @@ __author__ = 'Ivan Fernando Galaviz Mendoza'
 import datetime
 from wtforms import StringField, TextAreaField, SubmitField, validators, \
     SelectField
-from wtforms.fields.html5 import DateTimeLocalField
+from wtforms.fields.html5 import DateTimeLocalField, SearchField
 from flask import Flask, render_template
 from flask_navigation import Navigation
 from flask_pymongo import PyMongo
@@ -29,20 +29,26 @@ class NewsSearchForm(FlaskForm):
     START_DATE_LABEL = 'Start Date'
     END_DATE_LABEL = 'End Date'
 
-    newspaper = StringField('Newspaper', validators=(validators.Optional(),))
-    title = StringField('Title', validators=(validators.Optional(),))
-    content = TextAreaField('Content', validators=(validators.Optional(),))
+    newspaper = SearchField('Newspaper',
+                            validators=(validators.Optional(),),
+                            render_kw={"placeholder": "Name of the newspaper..."})
+    title = SearchField('Title', validators=(validators.Optional(),),
+                        render_kw={"placeholder": "Title of the article..."})
+    content = TextAreaField('Content', validators=(validators.Optional(),),
+                            render_kw={"placeholder": "Content of the article..."})
     #    state = SelectField('State', choices=)
     pub_date_from = DateTimeLocalField(START_DATE_LABEL,
-                                       validators=(validators.Optional(),))
+                                       validators=(validators.Optional(),),
+                                       format='%d-%m-%YT%H:%M')
     pub_date_to = DateTimeLocalField(END_DATE_LABEL,
-                                     validators=(validators.Optional(),))
+                                     validators=(validators.Optional(),),
+                                     format='%d-%m-%YT%H:%M')
     extract_date_from = DateTimeLocalField(START_DATE_LABEL,
                                            validators=(validators.Optional(),))
     extract_date_to = DateTimeLocalField(END_DATE_LABEL,
                                          validators=(validators.Optional(),))
 
-    submit = SubmitField('Submit')
+    submit = SubmitField('Search')
 
 
 nav.Bar('top', [
@@ -54,6 +60,10 @@ nav.Bar('top', [
 @app.route('/', methods=('GET', 'POST'))
 def submit():
     form = NewsSearchForm()
+    print('Pubdate_from =', form.pub_date_from)
+    print('Pubdate_from =', form.pub_date_from.data)
+    print('Pubdate_to=', form.pub_date_to)
+    print('Pubdate_to=', form.pub_date_to.data)
     if form.validate_on_submit():
         return search_results(form)
     return render_template('index.html', form=form)
@@ -61,8 +71,7 @@ def submit():
 
 @app.route('/about')
 def about():
-    # TODO: crear página "about"
-    pass
+    return render_template('about.html')
 
 
 @app.route('/results')

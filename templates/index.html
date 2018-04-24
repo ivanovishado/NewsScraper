@@ -27,25 +27,29 @@
         {% endfor %}
     </p>
     <p>
-        Publication Date<br>
-        {{ form.pub_date_from.label }}<tab3>{{ form.pub_date_to.label }}</tab3><br>
-        {{ form.pub_date_from(class_='datepicker') }}{{ form.pub_date_to(class_='datepicker') }}<br>
+        <h2>Publication Date</h2>
+        {{ form.pub_date_from.label }}<br>
+        {{ form.pub_date_from(class_='datepicker') }}<br>
         {% for error in form.pub_date_from.errors %}
             <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
+        {{ form.pub_date_to.label }}<br>
+        {{ form.pub_date_to(class_='datepicker') }}<br>
         {% for error in form.pub_date_to.errors %}
-            <tabl><span style="color: red;">[{{ error }}]</span></tabl>
+            <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
     </p>
     <p>
-        Extract Date<br>
-        {{ form.extract_date_from.label }}<tab3>{{ form.extract_date_to.label }}</tab3><br>
-        {{ form.extract_date_from(class_='datepicker') }}{{ form.extract_date_to(class_='datepicker') }}<br>
+        <h2>Extraction Date</h2>
+        {{ form.extract_date_from.label }}<br>
+        {{ form.extract_date_from(class_='datepicker') }}<br>
         {% for error in form.extract_date_from.errors %}
             <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
+        {{ form.extract_date_to.label }}<br>
+        {{ form.extract_date_to(class_='datepicker') }}<br>
         {% for error in form.extract_date_to.errors %}
-            <tab3><span style="color: red;">[{{ error }}]</span></tab3>
+            <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
     </p>
     <p>{{ form.submit() }}</p>
