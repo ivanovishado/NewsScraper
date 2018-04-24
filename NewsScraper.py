@@ -31,7 +31,7 @@ data['newspapers'] = {}
 articles = []
 
 # Loads the JSON files with news sites
-with open('NewsPapers2.json') as data_file:
+with open('resources/NewsPapers2.json') as data_file:
     companies = json.load(data_file)
 
 

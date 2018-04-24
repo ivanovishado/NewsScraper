@@ -6,9 +6,7 @@ Flask app for querying scraped news.
 __title__ = 'mmld'
 __author__ = 'Ivan Fernando Galaviz Mendoza'
 
-import datetime
-from wtforms import StringField, TextAreaField, SubmitField, validators, \
-    SelectField
+from wtforms import TextAreaField, SubmitField, validators
 from wtforms.fields.html5 import DateTimeLocalField, SearchField
 from flask import Flask, render_template
 from flask_navigation import Navigation
@@ -39,14 +37,16 @@ class NewsSearchForm(FlaskForm):
     #    state = SelectField('State', choices=)
     pub_date_from = DateTimeLocalField(START_DATE_LABEL,
                                        validators=(validators.Optional(),),
-                                       format='%d-%m-%YT%H:%M')
+                                       format='%Y-%m-%dT%H:%M')
     pub_date_to = DateTimeLocalField(END_DATE_LABEL,
                                      validators=(validators.Optional(),),
-                                     format='%d-%m-%YT%H:%M')
+                                     format='%Y-%m-%dT%H:%M')
     extract_date_from = DateTimeLocalField(START_DATE_LABEL,
-                                           validators=(validators.Optional(),))
+                                           validators=(validators.Optional(),),
+                                           format='%Y-%m-%dT%H:%M')
     extract_date_to = DateTimeLocalField(END_DATE_LABEL,
-                                         validators=(validators.Optional(),))
+                                         validators=(validators.Optional(),),
+                                         format='%Y-%m-%dT%H:%M')
 
     submit = SubmitField('Search')
 
@@ -60,10 +60,6 @@ nav.Bar('top', [
 @app.route('/', methods=('GET', 'POST'))
 def submit():
     form = NewsSearchForm()
-    print('Pubdate_from =', form.pub_date_from)
-    print('Pubdate_from =', form.pub_date_from.data)
-    print('Pubdate_to=', form.pub_date_to)
-    print('Pubdate_to=', form.pub_date_to.data)
     if form.validate_on_submit():
         return search_results(form)
     return render_template('index.html', form=form)
@@ -87,26 +83,42 @@ def search_results(search):
     extract_date_to_data = search.extract_date_to.data
 
     if newspaper_data is not "":
-        query[constants.NEWSPAPER] = newspaper_data
+        query[constants.NEWSPAPER] = generate_regex_dict(newspaper_data)
     if title_data is not "":
-        query[constants.TITLE] = title_data
+        query[constants.TITLE] = generate_regex_dict(title_data)
     if content_data is not "":
-        query[constants.TEXT] = content_data
+        query[constants.TEXT] = generate_regex_dict(content_data)
     if pub_date_from_data is not None and pub_date_to_data is not None:
-        query[constants.PUB_DATE] = {
-            '$gte': pub_date_from_data,
-            '$lt': pub_date_to_data
-        }
+        query[constants.PUB_DATE] = generate_date_search_dict(
+            pub_date_from_data, pub_date_to_data)
     if extract_date_from_data is not None and extract_date_to_data is not None:
-        query[constants.EXTRACT_DATE] = {
-            '$gte': extract_date_from_data,
-            '$lt': extract_date_to_data
-        }
+        query[constants.EXTRACT_DATE] = generate_date_search_dict(
+            extract_date_from_data, extract_date_to_data)
+
+    print(query)
 
     items = mongo.db.test.find(query)
     table = NewsTable(items)
 
     return render_template('results.html', table=table)
+
+
+def generate_regex_dict(search_field):
+    """
+    Adds 'like' functionality as in a SQL query
+    also adds not case-sensitive option.
+    """
+    return {
+        '$regex': '.*{}.*'.format(search_field),
+        '$options': 'i'
+    }
+
+
+def generate_date_search_dict(start_date, end_date):
+    return {
+        '$gte': start_date,
+        '$lt': end_date
+    }
 
 
 if __name__ == '__main__':
