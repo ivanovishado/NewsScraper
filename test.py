@@ -95,8 +95,6 @@ def search_results(search):
         query[constants.EXTRACT_DATE] = generate_date_search_dict(
             extract_date_from_data, extract_date_to_data)
 
-    print(query)
-
     items = mongo.db.test.find(query)
     table = NewsTable(items)
 
@@ -106,7 +104,9 @@ def search_results(search):
 def generate_regex_dict(search_field):
     """
     Adds 'like' functionality as in a SQL query
-    also adds not case-sensitive option.
+    also adds non case-sensitive option.
+    :param search_field: field that wants to be searched as a 'like' in SQL.
+    :return: dict for a mongodb query, contemplating non case-sensitivity.
     """
     return {
         '$regex': '.*{}.*'.format(search_field),
@@ -115,6 +115,12 @@ def generate_regex_dict(search_field):
 
 
 def generate_date_search_dict(start_date, end_date):
+    """
+    Generates a dict that allows to search in a date range with mongodb.
+    :param start_date: date to begin search.
+    :param end_date: date to end search.
+    :return: compatible mongodb query dict.
+    """
     return {
         '$gte': start_date,
         '$lt': end_date

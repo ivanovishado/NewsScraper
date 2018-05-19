@@ -1,10 +1,120 @@
 {
   "El Informador": {
-      "rss": "https://www.informador.mx/rss/ultimas-noticias.xml",
-      "link": "https://www.informador.mx/"
+    "rss": "https://www.informador.mx/rss/ultimas-noticias.xml",
+    "link": "https://www.informador.mx/"
   },
   "El Occidental": {
-      "rss": "https://www.eloccidental.com.mx/rss.xml",
-      "link": "https://www.eloccidental.com.mx/"
+    "rss": "https://www.eloccidental.com.mx/rss.xml",
+    "link": "https://www.eloccidental.com.mx/"
+  },
+  "El Heraldo de Aguascaliente": {
+    "link": "http://www.heraldo.mx/"
+  },
+  "El Mexicano": {
+    "link": "http://www.el-mexicano.com.mx/inicio.htm"
+  },
+  "Peninsular Digital": {
+    "rss": "http://peninsulardigital.com/feed",
+    "link": "http://peninsulardigital.com/"
+  },
+  "Tribuna Campeche": {
+    "link": "http://tribunacampeche.com/"
+  },
+  "Diario de Chiapas": {
+    "link": "http://www.diariodechiapas.com/landing/"
+  },
+  "El Diario": {
+    "link": "http://diario.mx/"
+  },
+  "La Prensa": {
+    "link": "https://www.la-prensa.com.mx/"
+  },
+  "Vanguardia": {
+    "rss": "https://www.vanguardia.com.mx/rss.xml",
+    "link": "https://vanguardia.com.mx/"
+  },
+  "Ecos de la Costa": {
+    "link": "https://www.ecosdelacosta.mx/"
+  },
+  "Orale que chiquito - Durango": {
+    "rss": "http://durango.oralequechiquito.com/feed/",
+    "link": "http://durango.oralequechiquito.com/"
+  },
+  "am": {
+    "link": "https://www.am.com.mx/"
+  },
+  "Novedades Acapulco": {
+    "link": "https://novedadesaca.mx"
+  },
+  "Sintesis": {
+    "rss": "https://www.sintesis.mx/feed/",
+    "link": "https://www.sintesis.mx/"
+  },
+  "Capital": {
+    "link": "http://www.capitaledomex.com.mx/"
+  },
+  "Provincia": {
+    "link": "http://www.provincia.com.mx/"
+  },
+  "Diario de Morelos": {
+    "link": "https://www.diariodemorelos.com/noticias/"
+  },
+  "Diario Consensos": {
+    "rss": "http://www.consensos.com.mx/feeds/posts/default",
+    "link": "http://www.consensos.com.mx/"
+  },
+  "Milenio - Monterrey": {
+    "link": "http://www.milenio.com/monterrey/"
+  },
+  "Tiempo Digital": {
+    "rss": "http://tiempodigital.mx/feed/",
+    "link": "http://tiempodigital.mx/"
+  },
+  "La Jornada de Oriente": {
+    "rss": "http://www.lajornadadeoriente.com.mx/feed/",
+    "link": "http://www.lajornadadeoriente.com.mx/"
+  },
+  "Noticias de Queretaro": {
+    "rss": "http://www.noticiasdequeretaro.com.mx/feed/",
+    "link": "http://www.noticiasdequeretaro.com.mx/"
+  },
+  "Novedades Quintana Roo": {
+    "link": "https://sipse.com/novedades/"
+  },
+  "La Verdad": {
+    "rss": "https://laverdadnoticias.com/rss/feed.xml",
+    "link": "https://laverdadnoticias.com/"
+  },
+  "Pulso Diario de San Luis": {
+    "link": "http://pulsoslp.com.mx/"
+  },
+  "El Debate": {
+    "link": "https://www.debate.com.mx/"
+  },
+  "El Imparcial - Sonora": {
+    "rss": "http://www.elimparcial.com/rss/rss.xml",
+    "link": "http://www.elimparcial.com/"
+  },
+  "Tabasco Hoy": {
+    "rss": "http://www.tabascohoy.com/servicios/secciones/rss_1_0_0.xml",
+    "link": "http://www.tabascohoy.com/"
+  },
+  "La Tarde de Reynosa": {
+    "link": "http://www.latarde.com.mx/"
+  },
+  "El Sol de Tlaxcala": {
+    "link": "https://www.elsoldetlaxcala.com.mx/"
+  },
+  "Diario de Xalapa": {
+    "rss": "https://www.diariodexalapa.com.mx/rss.xml",
+    "link": "https://www.diariodexalapa.com.mx/"
+  },
+  "De Peso": {
+    "rss": "https://depeso.com/feed/",
+    "link": "https://depeso.com/"
+  },
+  "La Jornada Zacatecas": {
+    "rss": "http://ljz.mx/feed/",
+    "link": "http://ljz.mx/"
   }
 }

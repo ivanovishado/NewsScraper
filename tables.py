@@ -8,6 +8,6 @@ class NewsTable(Table):
     text = Col('Text')
     tags = Col('Tags')
     link = Col('Link')
-    pub_date = Col('Published')
-    extract_date = Col('Extracted')
+    pub_date = Col('Publication Date')
+    extract_date = Col('Extraction Date')
     category = Col('Category', show=False)

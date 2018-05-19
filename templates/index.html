@@ -4,54 +4,54 @@
     <title>News Search</title>
     <h1>{{ nav.top.current_item.label }}</h1>
     <form action="" method="POST">
-    {{ form.hidden_tag() }}
-    <p>
-        {{ form.newspaper.label }}<br>
-        {{ form.newspaper(size=15) }}<br>
-        {% for error in form.newspaper.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.title.label }}<br>
-        {{ form.title(size=20) }}<br>
-        {% for error in form.title.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.content.label }}<br>
-        {{ form.content }}<br>
-        {% for error in form.content.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>
-        <h2>Publication Date</h2>
-        {{ form.pub_date_from.label }}<br>
-        {{ form.pub_date_from(class_='datepicker') }}<br>
-        {% for error in form.pub_date_from.errors %}
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.newspaper.label }}<br>
+            {{ form.newspaper(size=15) }}<br>
+            {% for error in form.newspaper.errors %}
             <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-        {{ form.pub_date_to.label }}<br>
-        {{ form.pub_date_to(class_='datepicker') }}<br>
-        {% for error in form.pub_date_to.errors %}
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.title.label }}<br>
+            {{ form.title(size=20) }}<br>
+            {% for error in form.title.errors %}
             <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>
-        <h2>Extraction Date</h2>
-        {{ form.extract_date_from.label }}<br>
-        {{ form.extract_date_from(class_='datepicker') }}<br>
-        {% for error in form.extract_date_from.errors %}
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.content.label }}<br>
+            {{ form.content }}<br>
+            {% for error in form.content.errors %}
             <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-        {{ form.extract_date_to.label }}<br>
-        {{ form.extract_date_to(class_='datepicker') }}<br>
-        {% for error in form.extract_date_to.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>{{ form.submit() }}</p>
-</form>
+            {% endfor %}
+        </p>
+        <p>
+            <h2>Publication Date</h2>
+            {{ form.pub_date_from.label }}<br>
+            {{ form.pub_date_from(class_='datepicker') }}<br>
+            {% for error in form.pub_date_from.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            {{ form.pub_date_to.label }}<br>
+            {{ form.pub_date_to(class_='datepicker') }}<br>
+            {% for error in form.pub_date_to.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            <h2>Extraction Date</h2>
+            {{ form.extract_date_from.label }}<br>
+            {{ form.extract_date_from(class_='datepicker') }}<br>
+            {% for error in form.extract_date_from.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            {{ form.extract_date_to.label }}<br>
+            {{ form.extract_date_to(class_='datepicker') }}<br>
+            {% for error in form.extract_date_to.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
 {% endblock %}

@@ -17,16 +17,17 @@ import feedparser as fp
 import newspaper
 import constants
 
-# TODO: Crear clase para los estados con sus periódicos
 # TODO: Asignar timezones pertinentes al estado -- time.localtime().tm_isdst
-# TODO: Diseñar base de datos para guardar por [estado][periodico] -> articulos
 # TODO: Crear diccionario temporal para cuando se pierda la conexión con la base de datos
+# TODO: Validar si el contenido no está vacío
 
 # Set the limit for number of articles to download
-LIMIT = 4
+ARTICLES_TO_DOWNLOAD = 10
 
 data = {}
 data['newspapers'] = {}
+
+train = {}
 
 articles = []
 
@@ -34,18 +35,26 @@ articles = []
 with open('resources/NewsPapers2.json') as data_file:
     companies = json.load(data_file)
 
+try:
+    f = open(constants.ID_FILENAME)
+except IOError:
+    current_id = 0
+else:
+    with f:
+        current_id = int(f.read())
 
-def get_utc(timestamp):
-    """Converts a timestamp to UTC."""
-    local = pytz.timezone(get_localzone())
-    naive = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
-    local_dt = local.localize(naive, is_dst=None)
-    return local_dt.astimezone(pytz.utc)
+
+def try_to_get_utc(date):
+    try:
+        return datetime.utcfromtimestamp(mktime(date))
+    except Exception as e:
+        print(e)
+        return date
 
 
 # Initialize database connection
-client = MongoClient()
-db = client.test
+# client = MongoClient()
+# db = client.test
 
 count = 1
 
@@ -56,7 +65,7 @@ for company, value in companies.items():
     # If you do not want to scrape from the RSS-feed, just leave the RSS attr empty in the JSON file.
     if 'rss' in value:
         d = fp.parse(value['rss'])
-        print("Downloading articles from ", company)
+        print("Downloading articles from", company)
         newsPaper = {
             "rss": value['rss'],
             "link": value['link'],
@@ -66,13 +75,12 @@ for company, value in companies.items():
             # Check if publish date is provided, if no the article is skipped.
             # This is done to keep consistency in the data and to keep the script from crashing.
             if hasattr(entry, 'published'):
-                if count > LIMIT:
+                if count > ARTICLES_TO_DOWNLOAD:
                     break
                 try:
                     content = Article(entry.link, fetch_images=False)
                     content.download()
                     content.parse()
-                    content.nlp()
                 except Exception as e:
                     # If the download for some reason fails (ex. 404) the script will continue downloading
                     # the next article.
@@ -84,18 +92,23 @@ for company, value in companies.items():
                            constants.TEXT: content.text,
                            constants.TAGS: list(content.tags),
                            constants.LINK: entry.link,
-                           constants.PUB_DATE: datetime.utcfromtimestamp(
-                               mktime(entry.published_parsed)),
+                           constants.PUB_DATE: try_to_get_utc(
+                               entry.published_parsed),
                            constants.EXTRACT_DATE: datetime.utcnow(),
                            constants.CATEGORY: None}
-                db.test.insert_one(article)
+                # db.test.insert_one(article)
+                train[current_id] = {
+                    'title': content.title,
+                    'content': content.text
+                }
                 newsPaper['articles'].append(article)
-                print(count, "articles downloaded from", company, ", url: ", entry.link)
+                print(count, "articles downloaded from", company, ",url:", entry.link)
                 count = count + 1
+                current_id += 1
     else:
         # This is the fallback method if a RSS-feed link is not provided.
         # It uses the python newspaper library to extract articles
-        print("Building site for ", company)
+        print("Building site for", company)
         paper = newspaper.build(value['link'], language='es')
         newsPaper = {
             "link": value['link'],
@@ -103,7 +116,8 @@ for company, value in companies.items():
         }
         noneTypeCount = 0
         for content in paper.articles:
-            if count > LIMIT:
+            print("Processing article", count)
+            if count > ARTICLES_TO_DOWNLOAD:
                 break
             try:
                 content.download()
@@ -123,29 +137,38 @@ for company, value in companies.items():
                     break
                 count = count + 1
                 continue
-            article = {'newspaper': company,
-                       'title': content.title,
-                       'text': content.text,
-                       'tags': list(content.tags),
-                       'link': content.url,
-                       'published': get_utc(content.publish_date),
-                       'extracted': datetime.utcnow(),
-                       'topics': []}
-            db.test.insert_one(article)
+            article = {constants.NEWSPAPER: company,
+                       constants.TITLE: content.title,
+                       constants.TEXT: content.text,
+                       constants.TAGS: list(content.tags),
+                       constants.LINK: content.url,
+                       constants.PUB_DATE: content.publish_date,
+                       constants.EXTRACT_DATE: datetime.utcnow(),
+                       constants.CATEGORY: []}
+            # db.test.insert_one(article)
+            train[current_id] = {
+                'title': content.title,
+                'content': content.text
+            }
             newsPaper['articles'].append(article)
-            print(count, "articles downloaded from", company, " using newspaper, url: ", content.url)
+            print(count, "articles downloaded from", company,
+                  "using newspaper, url:", content.url)
             count = count + 1
             noneTypeCount = 0
+            current_id += 1
     count = 1
     data['newspapers'][company] = newsPaper
 
 # Close DB connection
-client.close()
+# client.close()
+
+# Updates current ID to file
+with open(constants.ID_FILENAME, 'w') as f:
+    f.write(str(current_id))
 
 # Finally it saves the articles as a JSON-file.
-"""
 try:
-    with open('scraped_articles.json', 'w') as outfile:
-        json.dump(data, outfile)
-except Exception as e: print(e)
-"""
+    with open('scraped_articles_' + str(current_id) + '.json', 'a') as outfile:
+        json.dump(train, outfile, indent=2)
+except Exception as e:
+    print(e)
