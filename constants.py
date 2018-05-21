@@ -4,6 +4,7 @@
 Constants for maintaining order between the scraper and the web app.
 """
 
+MONGO_ID = '_id'
 NEWSPAPER = 'newspaper'
 TITLE = 'title'
 TEXT = 'text'
@@ -11,5 +12,10 @@ TAGS = 'tags'
 LINK = 'link'
 PUB_DATE = 'pub_date'
 EXTRACT_DATE = 'extract_date'
-CATEGORY = 'category'
+IS_CLASSIFIED = 'is_classified'
+IS_VIOLENT = 'is_violent'
 ID_FILENAME = 'cur_id.txt'
+NON_VIOLENT_CLASS_ID = 0
+VIOLENT_CLASS_ID = 1
+SERIALIZED_COUNT_VECTORIZER_FILENAME = 'CV.pkl'
+SERIALIZED_CLASSIFIER_FILENAME = 'clf.pkl'

@@ -10,4 +10,5 @@ class NewsTable(Table):
     link = Col('Link')
     pub_date = Col('Publication Date')
     extract_date = Col('Extraction Date')
-    category = Col('Category', show=False)
+    is_classified = Col('Is Classified', show=False)
+    is_violent = Col('Is Violent?')

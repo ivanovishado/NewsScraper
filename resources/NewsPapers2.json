@@ -7,7 +7,7 @@
     "rss": "https://www.eloccidental.com.mx/rss.xml",
     "link": "https://www.eloccidental.com.mx/"
   },
-  "El Heraldo de Aguascaliente": {
+  "El Heraldo de Aguascalientes": {
     "link": "http://www.heraldo.mx/"
   },
   "El Mexicano": {
@@ -40,8 +40,9 @@
     "rss": "http://durango.oralequechiquito.com/feed/",
     "link": "http://durango.oralequechiquito.com/"
   },
-  "am": {
-    "link": "https://www.am.com.mx/"
+  "El Heraldo de Leon": {
+    "rss": "http://www.heraldoleon.mx/feed/",
+    "link": "http://www.heraldoleon.mx/"
   },
   "Novedades Acapulco": {
     "link": "https://novedadesaca.mx"
@@ -59,9 +60,9 @@
   "Diario de Morelos": {
     "link": "https://www.diariodemorelos.com/noticias/"
   },
-  "Diario Consensos": {
-    "rss": "http://www.consensos.com.mx/feeds/posts/default",
-    "link": "http://www.consensos.com.mx/"
+  "Periodico Realidades": {
+    "rss": "http://realidadesperiodico.com/feed/",
+    "link": "http://realidadesperiodico.com/"
   },
   "Milenio - Monterrey": {
     "link": "http://www.milenio.com/monterrey/"
@@ -98,6 +99,9 @@
   "Tabasco Hoy": {
     "rss": "http://www.tabascohoy.com/servicios/secciones/rss_1_0_0.xml",
     "link": "http://www.tabascohoy.com/"
+  },
+  "Diario Presente": {
+    "link": "https://www.diariopresente.mx/"
   },
   "La Tarde de Reynosa": {
     "link": "http://www.latarde.com.mx/"

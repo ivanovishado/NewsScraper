@@ -95,7 +95,8 @@ for company, value in companies.items():
                            constants.PUB_DATE: try_to_get_utc(
                                entry.published_parsed),
                            constants.EXTRACT_DATE: datetime.utcnow(),
-                           constants.CATEGORY: None}
+                           constants.IS_CLASSIFIED: False,
+                           constants.IS_VIOLENT: None}
                 # db.test.insert_one(article)
                 train[current_id] = {
                     'title': content.title,
@@ -144,7 +145,8 @@ for company, value in companies.items():
                        constants.LINK: content.url,
                        constants.PUB_DATE: content.publish_date,
                        constants.EXTRACT_DATE: datetime.utcnow(),
-                       constants.CATEGORY: []}
+                       constants.IS_CLASSIFIED: False,
+                       constants.IS_VIOLENT: None}
             # db.test.insert_one(article)
             train[current_id] = {
                 'title': content.title,
@@ -168,7 +170,7 @@ with open(constants.ID_FILENAME, 'w') as f:
 
 # Finally it saves the articles as a JSON-file.
 try:
-    with open('scraped_articles_' + str(current_id) + '.json', 'a') as outfile:
+    with open('scraped_articles_' + str(current_id) + '.json', 'a', encoding="utf-8") as outfile:
         json.dump(train, outfile, indent=2)
 except Exception as e:
     print(e)
