@@ -17,12 +17,14 @@ import feedparser as fp
 import newspaper
 import constants
 
+from classifier import Classifier
+
 # TODO: Asignar timezones pertinentes al estado -- time.localtime().tm_isdst
 # TODO: Crear diccionario temporal para cuando se pierda la conexión con la base de datos
 # TODO: Validar si el contenido no está vacío
 
 # Set the limit for number of articles to download
-ARTICLES_TO_DOWNLOAD = 10
+ARTICLES_TO_DOWNLOAD = 4
 
 data = {}
 data['newspapers'] = {}
@@ -32,7 +34,7 @@ train = {}
 articles = []
 
 # Loads the JSON files with news sites
-with open('resources/NewsPapers2.json') as data_file:
+with open('resources/NewsPapers.json') as data_file:
     companies = json.load(data_file)
 
 try:
@@ -53,8 +55,10 @@ def try_to_get_utc(date):
 
 
 # Initialize database connection
-# client = MongoClient()
-# db = client.test
+client = MongoClient()
+
+# Assign database
+db = client.test
 
 count = 1
 
@@ -95,9 +99,9 @@ for company, value in companies.items():
                            constants.PUB_DATE: try_to_get_utc(
                                entry.published_parsed),
                            constants.EXTRACT_DATE: datetime.utcnow(),
-                           constants.IS_CLASSIFIED: False,
+                           constants.HAS_BEEN_CLASSIFIED: False,
                            constants.IS_VIOLENT: None}
-                # db.test.insert_one(article)
+                db.test.insert_one(article)
                 train[current_id] = {
                     'title': content.title,
                     'content': content.text
@@ -145,9 +149,9 @@ for company, value in companies.items():
                        constants.LINK: content.url,
                        constants.PUB_DATE: content.publish_date,
                        constants.EXTRACT_DATE: datetime.utcnow(),
-                       constants.IS_CLASSIFIED: False,
+                       constants.HAS_BEEN_CLASSIFIED: False,
                        constants.IS_VIOLENT: None}
-            # db.test.insert_one(article)
+            db.test.insert_one(article)
             train[current_id] = {
                 'title': content.title,
                 'content': content.text
@@ -162,15 +166,24 @@ for company, value in companies.items():
     data['newspapers'][company] = newsPaper
 
 # Close DB connection
-# client.close()
+client.close()
 
+clf = Classifier()
+clf.start()
+clf.notify()
+
+
+"""
 # Updates current ID to file
 with open(constants.ID_FILENAME, 'w') as f:
     f.write(str(current_id))
+"""
 
 # Finally it saves the articles as a JSON-file.
+"""
 try:
     with open('scraped_articles_' + str(current_id) + '.json', 'a', encoding="utf-8") as outfile:
         json.dump(train, outfile, indent=2)
 except Exception as e:
     print(e)
+"""
