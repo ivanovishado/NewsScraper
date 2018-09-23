@@ -16,7 +16,15 @@ from tables import NewsTable
 from config import Config
 import constants
 
-app = Flask(__name__)
+# Este prefix solo es para hacer el deployment
+# Volverlo en una cadena vacia si se quiere correr la app localmente
+PREFIX="/news-scraper"
+
+app = Flask(
+    __name__,
+    static_url_path=PREFIX
+    )
+
 app.config.from_object(Config)
 nav = Navigation(app)
 
@@ -57,7 +65,7 @@ nav.Bar('top', [
 ])
 
 
-@app.route('/', methods=('GET', 'POST'))
+@app.route(PREFIX + '/', methods=('GET', 'POST'))
 def submit():
     form = NewsSearchForm()
     if form.validate_on_submit():
@@ -65,12 +73,12 @@ def submit():
     return render_template('index.html', form=form)
 
 
-@app.route('/about')
+@app.route(PREFIX + '/about')
 def about():
     return render_template('about.html')
 
 
-@app.route('/results')
+@app.route(PREFIX + '/results')
 def search_results(search):
     query = {}
 
