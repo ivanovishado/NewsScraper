@@ -55,6 +55,7 @@ class Classifier(Thread):
                 }
             )
         self._work = False
+        # TODO: Cerrar conexión con la base de datos al finalizar clasificación
 
     def set_stop_words(self):
         with open('stopwords-es.txt', encoding="utf-8") as f:

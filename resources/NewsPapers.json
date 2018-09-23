@@ -3,36 +3,8 @@
       "rss": "https://www.informador.mx/rss/ultimas-noticias.xml",
       "link": "https://www.informador.mx/"
   },
-  "eloccidental": {
-      "rss": "https://www.eloccidental.com.mx/feed",
-      "link": "https://www.eloccidental.com.mx/"
-  },
-  "pagina24jalisco": {
-      "link": "http://pagina24jalisco.com.mx/"
-  },
-  "publimetroguadalajara": {
-      "rss": "https://www.publimetro.com.mx/mx/rss/global.xml",
-      "link": "https://www.readmetro.com/es/mexico/guadalajara/"
-  },
-  "eldiariontr": {
-      "link": "http://www.ntrguadalajara.com/"
-  },
-  "vallartaopina": {
-      "link": "http://vallartaopina.net/"
-  },
-  "reforma": {
-      "rss": "https://www.reforma.com/rss/justicia.xml",
-      "link": "https://www.reforma.com/"
-  },
-  "laprensa": {
-      "rss": "https://www.la-prensa.com.mx/feed",
-      "link": "https://www.la-prensa.com.mx/"
-  },
-  "eluniversal": {
-      "rss": "http://www.eluniversal.com.mx/rss.xml",
-      "link": "http://www.eluniversal.com.mx/"
-  },
-  "elgrafico": {
-      "link": "http://www.elgrafico.mx/"
+  "Vanguardia": {
+    "rss": "https://www.vanguardia.com.mx/rss.xml",
+    "link": "https://vanguardia.com.mx/"
   }
 }

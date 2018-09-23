@@ -6,11 +6,10 @@ News scraper, scrapes articles from a newspaper then adds them to a database.
 __title__ = 'mmld'
 __author__ = 'Ivan Fernando Galaviz Mendoza'
 
-from tzlocal import get_localzone
+import argparse
 from datetime import datetime
 from time import mktime
 import json
-import pytz
 from pymongo import MongoClient
 from newspaper import Article
 import feedparser as fp
@@ -23,8 +22,16 @@ from classifier import Classifier
 # TODO: Crear diccionario temporal para cuando se pierda la conexión con la base de datos
 # TODO: Validar si el contenido no está vacío
 
+
+p = argparse.ArgumentParser("NewsScraper")
+p.add_argument("-f", "--filename", default="./resources/NewsPapers.json",
+               type=str, action="store", dest="filename",
+               help="File to get news [NewsPaper.json]")
+
+opts = p.parse_args()
+
 # Set the limit for number of articles to download
-ARTICLES_TO_DOWNLOAD = 4
+ARTICLES_TO_DOWNLOAD = 10
 
 data = {}
 data['newspapers'] = {}
@@ -33,8 +40,8 @@ train = {}
 
 articles = []
 
-# Loads the JSON files with news sites
-with open('resources/NewsPapers.json') as data_file:
+# Loads the JSON file with news sites
+with open(opts.filename) as data_file:
     companies = json.load(data_file)
 
 try:
@@ -107,7 +114,8 @@ for company, value in companies.items():
                     'content': content.text
                 }
                 newsPaper['articles'].append(article)
-                print(count, "articles downloaded from", company, ",url:", entry.link)
+                print(count, "articles downloaded from", company, ",url:",
+                      entry.link)
                 count = count + 1
                 current_id += 1
     else:
@@ -171,7 +179,6 @@ client.close()
 clf = Classifier()
 clf.start()
 clf.notify()
-
 
 """
 # Updates current ID to file
