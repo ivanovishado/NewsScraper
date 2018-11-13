@@ -18,8 +18,6 @@ from classifier import Classifier
 
 # TODO: Asignar timezones pertinentes al estado -- time.localtime().tm_isdst
 # TODO: Crear diccionario temporal para cuando se pierda la conexión con la base de datos
-# TODO: Schedule parse_news()
-# TODO: Unfork project
 
 
 p = argparse.ArgumentParser("NewsScraper")
@@ -69,10 +67,9 @@ def scrape_news():
         # If you do not want to scrape from the RSS-feed,
         # just leave the RSS attr empty in the JSON file.
         if 'rss' in info:
-            article_to_insert = parse_rss(company, info)
+            parse_rss(company, info)
         else:
-            article_to_insert = parse_link(company, info)
-        db.test.insert_one(article_to_insert)
+            parse_link(company, info)
 
 
 def parse_link(company, info):
@@ -106,7 +103,7 @@ def parse_link(company, info):
         if not is_valid_text(article.text):
             print_invalid_text_warning()
             continue
-        return {
+        db.test.insert_one({
             constants.NEWSPAPER: company,
             constants.TITLE: article.title,
             constants.TEXT: article.text,
@@ -116,7 +113,7 @@ def parse_link(company, info):
             constants.EXTRACT_DATE: datetime.utcnow(),
             constants.HAS_BEEN_CLASSIFIED: False,
             constants.IS_VIOLENT: None
-        }
+        })
 
 
 def parse_rss(company, info):
@@ -144,7 +141,7 @@ def parse_rss(company, info):
         if not is_valid_text(article.text):
             print_invalid_text_warning()
             continue
-        return {
+        db.test.insert_one({
             constants.NEWSPAPER: company,
             constants.TITLE: article.title,
             constants.TEXT: article.text,
@@ -154,7 +151,7 @@ def parse_rss(company, info):
             constants.EXTRACT_DATE: datetime.utcnow(),
             constants.HAS_BEEN_CLASSIFIED: False,
             constants.IS_VIOLENT: None
-        }
+        })
 
 
 # Close DB connection
