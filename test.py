@@ -18,7 +18,7 @@ import constants
 
 # Este prefix solo es para hacer el deployment
 # Volverlo en una cadena vacia si se quiere correr la app localmente
-PREFIX="/news-scraper"
+PREFIX = "/news-scraper"
 
 app = Flask(
     __name__,
