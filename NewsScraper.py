@@ -11,15 +11,16 @@ from datetime import datetime
 from time import mktime
 import json
 from pymongo import MongoClient
-from newspaper import Article, build
+from newspaper import Article
 import feedparser as fp
+import newspaper
 import constants
+
 from classifier import Classifier
 
 # TODO: Asignar timezones pertinentes al estado -- time.localtime().tm_isdst
 # TODO: Crear diccionario temporal para cuando se pierda la conexión con la base de datos
-# TODO: Schedule parse_news()
-# TODO: Unfork project
+# TODO: Validar si el contenido no está vacío
 
 
 p = argparse.ArgumentParser("NewsScraper")
@@ -32,9 +33,24 @@ opts = p.parse_args()
 # Set the limit for number of articles to download
 ARTICLES_TO_DOWNLOAD = 10
 
+data = {}
+data['newspapers'] = {}
+
+train = {}
+
+articles = []
+
 # Loads the JSON file with news sites
 with open(opts.filename) as data_file:
     companies = json.load(data_file)
+
+try:
+    f = open(constants.ID_FILENAME)
+except IOError:
+    current_id = 0
+else:
+    with f:
+        current_id = int(f.read())
 
 
 def try_to_get_utc(date):
@@ -51,111 +67,111 @@ client = MongoClient()
 # Assign database
 db = client.test
 
+count = 1
 
-def is_valid_text(text):
-    return text is not None and text != ""
-
-
-def print_invalid_text_warning():
-    print("Ignoring article due to invalid body.")
-
-
-def scrape_news():
-    for company, info in companies.items():
-        # If a RSS link is provided in the JSON file,
-        # this will be the first choice.
-        # Reason for this is that,
-        # RSS feeds often give more consistent and correct data.
-        # If you do not want to scrape from the RSS-feed,
-        # just leave the RSS attr empty in the JSON file.
-        if 'rss' in info:
-            article_to_insert = parse_rss(company, info)
-        else:
-            article_to_insert = parse_link(company, info)
-        db.test.insert_one(article_to_insert)
-
-
-def parse_link(company, info):
-    print("Building site for", company)
-    paper = build(info['link'], language='es')
-    none_type_count = 0
-    count = 0
-    for article in paper.articles:
-        print("Processing article", count)
-        if count > ARTICLES_TO_DOWNLOAD:
-            break
-        try:
-            article.download()
-            article.parse()
-        except Exception as e:
-            print(e)
-            print("continuing...")
-            continue
-        # Again, for consistency, if there is no found publish date
-        # the article will be skipped.
-        # After 10 downloaded articles from the same newspaper
-        # without publish date, the company will be skipped.
-        if article.publish_date is None:
-            print(count, " Article has date of type None...")
-            none_type_count += 1
-            if none_type_count > 10:
-                print("Too many noneType dates, aborting...")
+# Iterate through each news company
+for company, value in companies.items():
+    # If a RSS link is provided in the JSON file, this will be the first choice.
+    # Reason for this is that, RSS feeds often give more consistent and correct data.
+    # If you do not want to scrape from the RSS-feed, just leave the RSS attr empty in the JSON file.
+    if 'rss' in value:
+        d = fp.parse(value['rss'])
+        print("Downloading articles from", company)
+        newsPaper = {
+            "rss": value['rss'],
+            "link": value['link'],
+            "articles": []
+        }
+        for entry in d.entries:
+            # Check if publish date is provided, if no the article is skipped.
+            # This is done to keep consistency in the data and to keep the script from crashing.
+            if hasattr(entry, 'published'):
+                if count > ARTICLES_TO_DOWNLOAD:
+                    break
+                try:
+                    content = Article(entry.link, fetch_images=False)
+                    content.download()
+                    content.parse()
+                except Exception as e:
+                    # If the download for some reason fails (ex. 404) the script will continue downloading
+                    # the next article.
+                    print(e)
+                    print("continuing...")
+                    continue
+                article = {constants.NEWSPAPER: company,
+                           constants.TITLE: content.title,
+                           constants.TEXT: content.text,
+                           constants.TAGS: list(content.tags),
+                           constants.LINK: entry.link,
+                           constants.PUB_DATE: try_to_get_utc(
+                               entry.published_parsed),
+                           constants.EXTRACT_DATE: datetime.utcnow(),
+                           constants.HAS_BEEN_CLASSIFIED: False,
+                           constants.IS_VIOLENT: None}
+                db.test.insert_one(article)
+                train[current_id] = {
+                    'title': content.title,
+                    'content': content.text
+                }
+                newsPaper['articles'].append(article)
+                print(count, "articles downloaded from", company, ",url:",
+                      entry.link)
+                count = count + 1
+                current_id += 1
+    else:
+        # This is the fallback method if a RSS-feed link is not provided.
+        # It uses the python newspaper library to extract articles
+        print("Building site for", company)
+        paper = newspaper.build(value['link'], language='es')
+        newsPaper = {
+            "link": value['link'],
+            "articles": []
+        }
+        noneTypeCount = 0
+        for content in paper.articles:
+            print("Processing article", count)
+            if count > ARTICLES_TO_DOWNLOAD:
                 break
-            count += 1
-            continue
-        if not is_valid_text(article.text):
-            print_invalid_text_warning()
-            continue
-        return {
-            constants.NEWSPAPER: company,
-            constants.TITLE: article.title,
-            constants.TEXT: article.text,
-            constants.TAGS: list(article.tags),
-            constants.LINK: article.url,
-            constants.PUB_DATE: article.publish_date,
-            constants.EXTRACT_DATE: datetime.utcnow(),
-            constants.HAS_BEEN_CLASSIFIED: False,
-            constants.IS_VIOLENT: None
-        }
-
-
-def parse_rss(company, info):
-    parsed_dict = fp.parse(info['rss'])
-    print("Downloading articles from", company)
-    count = 0
-    for entry in parsed_dict.entries:
-        # Check if publish date is provided, if no the article is skipped.
-        # This is done to keep consistency in the data
-        # and to keep the script from crashing.
-        if not hasattr(entry, 'published'):
-            continue
-        if count > ARTICLES_TO_DOWNLOAD:
-            break
-        try:
-            article = Article(entry.link, fetch_images=False)
-            article.download()
-            article.parse()
-        except Exception as e:
-            # If the download for some reason fails (ex. 404)
-            # the script will continue downloading the next article.
-            print(e)
-            print("continuing...")
-            continue
-        if not is_valid_text(article.text):
-            print_invalid_text_warning()
-            continue
-        return {
-            constants.NEWSPAPER: company,
-            constants.TITLE: article.title,
-            constants.TEXT: article.text,
-            constants.TAGS: list(article.tags),
-            constants.LINK: entry.link,
-            constants.PUB_DATE: try_to_get_utc(entry.published_parsed),
-            constants.EXTRACT_DATE: datetime.utcnow(),
-            constants.HAS_BEEN_CLASSIFIED: False,
-            constants.IS_VIOLENT: None
-        }
-
+            try:
+                content.download()
+                content.parse()
+            except Exception as e:
+                print(e)
+                print("continuing...")
+                continue
+            # Again, for consistency, if there is no found publish date the article will be skipped.
+            # After 10 downloaded articles from the same newspaper without publish date, the company will be skipped.
+            if content.publish_date is None:
+                print(count, " Article has date of type None...")
+                noneTypeCount += 1
+                if noneTypeCount > 10:
+                    print("Too many noneType dates, aborting...")
+                    noneTypeCount = 0
+                    break
+                count = count + 1
+                continue
+            article = {constants.NEWSPAPER: company,
+                       constants.TITLE: content.title,
+                       constants.TEXT: content.text,
+                       constants.TAGS: list(content.tags),
+                       constants.LINK: content.url,
+                       constants.PUB_DATE: content.publish_date,
+                       constants.EXTRACT_DATE: datetime.utcnow(),
+                       constants.HAS_BEEN_CLASSIFIED: False,
+                       constants.IS_VIOLENT: None}
+            db.test.insert_one(article)
+            train[current_id] = {
+                'title': content.title,
+                'content': content.text
+            }
+            newsPaper['articles'].append(article)
+            print(count, "articles downloaded from", company,
+                  "using newspaper, url:", content.url)
+            count = count + 1
+            noneTypeCount = 0
+            current_id += 1
+    count = 1
+    data['newspapers'][company] = newsPaper
 
 # Close DB connection
 client.close()
@@ -163,3 +179,18 @@ client.close()
 clf = Classifier()
 clf.start()
 clf.notify()
+
+"""
+# Updates current ID to file
+with open(constants.ID_FILENAME, 'w') as f:
+    f.write(str(current_id))
+"""
+
+# Finally it saves the articles as a JSON-file.
+"""
+try:
+    with open('scraped_articles_' + str(current_id) + '.json', 'a', encoding="utf-8") as outfile:
+        json.dump(train, outfile, indent=2)
+except Exception as e:
+    print(e)
+"""
