@@ -6,7 +6,6 @@ News scraper, scrapes articles from a newspaper then adds them to a database.
 __title__ = 'mmld'
 __author__ = 'Ivan Fernando Galaviz Mendoza'
 
-import argparse
 from datetime import datetime
 from time import mktime
 import json
@@ -18,21 +17,7 @@ from classifier import Classifier
 
 # TODO: Asignar timezones pertinentes al estado -- time.localtime().tm_isdst
 # TODO: Crear diccionario temporal para cuando se pierda la conexión con la base de datos
-
-
-p = argparse.ArgumentParser("NewsScraper")
-p.add_argument("-f", "--filename", default="./resources/NewsPapers.json",
-               type=str, action="store", dest="filename",
-               help="File to get news [NewsPaper.json]")
-
-opts = p.parse_args()
-
-# Set the limit for number of articles to download
-ARTICLES_TO_DOWNLOAD = 10
-
-# Loads the JSON file with news sites
-with open(opts.filename) as data_file:
-    companies = json.load(data_file)
+# TODO: Crear index a partir de datos para evitar registros repetidos (db.profiles.create_index())
 
 
 def try_to_get_utc(date):
@@ -43,22 +28,22 @@ def try_to_get_utc(date):
         return date
 
 
-# Initialize database connection
-client = MongoClient()
-
-# Assign database
-db = client.test
-
-
-def is_valid_text(text):
-    return text is not None and text != ""
-
-
 def print_invalid_text_warning():
     print("Ignoring article due to invalid body.")
 
 
 def scrape_news():
+    # Loads the JSON file with news sites
+    with open(constants.NEWSPAPERS_PATH) as newspapers_file:
+        companies = json.load(newspapers_file)
+
+    # Initialize database connection
+    client = MongoClient()
+
+    # Assign database
+    db = client.test
+
+    print('Companies: ', companies)
     for company, info in companies.items():
         # If a RSS link is provided in the JSON file,
         # this will be the first choice.
@@ -67,19 +52,26 @@ def scrape_news():
         # If you do not want to scrape from the RSS-feed,
         # just leave the RSS attr empty in the JSON file.
         if 'rss' in info:
-            parse_rss(company, info)
+            parse_rss(company, info, db)
         else:
-            parse_link(company, info)
+            parse_link(company, info, db)
+
+    # Close DB connection
+    client.close()
+
+    # TODO: convert the following lines to a method
+    # Start classification of the scraped news
+    Classifier()
 
 
-def parse_link(company, info):
+def parse_link(company, info, db):
     print("Building site for", company)
     paper = build(info['link'], language='es')
     none_type_count = 0
-    count = 0
+    article_count = 0
     for article in paper.articles:
-        print("Processing article", count)
-        if count > ARTICLES_TO_DOWNLOAD:
+        print("Processing article", article_count)
+        if article_count > constants.ARTICLES_TO_DOWNLOAD:
             break
         try:
             article.download()
@@ -93,20 +85,21 @@ def parse_link(company, info):
         # After 10 downloaded articles from the same newspaper
         # without publish date, the company will be skipped.
         if article.publish_date is None:
-            print(count, " Article has date of type None...")
+            print(article_count, " Article has date of type None...")
             none_type_count += 1
             if none_type_count > 10:
                 print("Too many noneType dates, aborting...")
                 break
-            count += 1
+            article_count += 1
             continue
-        if not is_valid_text(article.text):
+        article_text = article.text
+        if not article_text:
             print_invalid_text_warning()
             continue
         db.test.insert_one({
             constants.NEWSPAPER: company,
             constants.TITLE: article.title,
-            constants.TEXT: article.text,
+            constants.TEXT: article_text,
             constants.TAGS: list(article.tags),
             constants.LINK: article.url,
             constants.PUB_DATE: article.publish_date,
@@ -116,17 +109,17 @@ def parse_link(company, info):
         })
 
 
-def parse_rss(company, info):
+def parse_rss(company, info, db):
     parsed_dict = fp.parse(info['rss'])
     print("Downloading articles from", company)
-    count = 0
+    article_count = 0
     for entry in parsed_dict.entries:
         # Check if publish date is provided, if no the article is skipped.
         # This is done to keep consistency in the data
         # and to keep the script from crashing.
         if not hasattr(entry, 'published'):
             continue
-        if count > ARTICLES_TO_DOWNLOAD:
+        if article_count > constants.ARTICLES_TO_DOWNLOAD:
             break
         try:
             article = Article(entry.link, fetch_images=False)
@@ -138,13 +131,14 @@ def parse_rss(company, info):
             print(e)
             print("continuing...")
             continue
-        if not is_valid_text(article.text):
+        article_text = article.text
+        if not article_text:
             print_invalid_text_warning()
             continue
         db.test.insert_one({
             constants.NEWSPAPER: company,
             constants.TITLE: article.title,
-            constants.TEXT: article.text,
+            constants.TEXT: article_text,
             constants.TAGS: list(article.tags),
             constants.LINK: entry.link,
             constants.PUB_DATE: try_to_get_utc(entry.published_parsed),
@@ -152,11 +146,3 @@ def parse_rss(company, info):
             constants.HAS_BEEN_CLASSIFIED: False,
             constants.IS_VIOLENT: None
         })
-
-
-# Close DB connection
-client.close()
-
-clf = Classifier()
-clf.start()
-clf.notify()
