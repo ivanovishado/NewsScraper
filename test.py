@@ -18,13 +18,11 @@ import constants
 from scheduler import ScraperScheduler
 from NewsScraper import scrape_news
 
-# Start scraping news
 ScraperScheduler(scrape_news)
 
 # Este prefix solo es para hacer el deployment
 # Volverlo en una cadena vacia si se quiere correr la app localmente
-# PREFIX = "/news-scraper"
-PREFIX = ""
+PREFIX = "/news-scraper"
 
 app = Flask(
     __name__,
