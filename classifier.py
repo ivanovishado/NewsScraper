@@ -7,7 +7,7 @@ then updates the document in the database.
 __title__ = 'Classifier'
 __author__ = 'Ivan Fernando Galaviz Mendoza'
 import pickle
-from threading import Thread, Condition
+from threading import Thread
 
 from pymongo import MongoClient
 from bson.objectid import ObjectId
@@ -21,11 +21,10 @@ class Classifier(Thread):
         self._vectorizer = deserialize(
             constants.SERIALIZED_COUNT_VECTORIZER_FILENAME)
         self._classifier = deserialize(constants.SERIALIZED_CLASSIFIER_FILENAME)
-        self._work = True
-        self._cond = Condition()
         self._client = MongoClient()
         self._db = self._client['test']
         self.set_stop_words()
+        self.start()
 
     def run(self):
         """
@@ -35,13 +34,6 @@ class Classifier(Thread):
         * is_violent -> asks to the classifier if the news content
             was found as violent or not.
         """
-        # while True:
-        self.print_message("Waiting...")
-        self._cond.acquire()
-        while not self._work:
-            self._cond.wait()
-        self._cond.release()
-        self.print_message("Working...")
         for article in self._db.test.find({constants.HAS_BEEN_CLASSIFIED: False}):
             self._db.test.update_one(
                 {constants.MONGO_ID: ObjectId(article[constants.MONGO_ID])},
@@ -54,15 +46,11 @@ class Classifier(Thread):
                     }
                 }
             )
-        self._work = False
-        # TODO: Cerrar conexión con la base de datos al finalizar clasificación
+        self._client.close()
 
     def set_stop_words(self):
         with open('stopwords-es.txt', encoding="utf-8") as f:
             setattr(self._vectorizer, 'stop_words', f.read().splitlines())
-
-    def print_message(self, message):
-        print("Classifier:", message)
 
     def text_to_tokens(self, text):
         """
@@ -81,16 +69,9 @@ class Classifier(Thread):
         """
         prediction = self._classifier.predict_proba(transformed_text)
         if prediction[0][constants.NON_VIOLENT_CLASS_ID] \
-               < prediction[0][constants.VIOLENT_CLASS_ID]:
+                < prediction[0][constants.VIOLENT_CLASS_ID]:
             return True
-        else:
-            return False
-
-    def notify(self):
-        self._cond.acquire()
-        self._work = True
-        self._cond.notify()
-        self._cond.release()
+        return False
 
 
 def deserialize(filename):

@@ -15,6 +15,10 @@ from flask_wtf import FlaskForm
 from tables import NewsTable
 from config import Config
 import constants
+from scheduler import ScraperScheduler
+from NewsScraper import scrape_news
+
+ScraperScheduler(scrape_news)
 
 # Este prefix solo es para hacer el deployment
 # Volverlo en una cadena vacia si se quiere correr la app localmente
@@ -136,4 +140,4 @@ def generate_date_search_dict(start_date, end_date):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=False)
