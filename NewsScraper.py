@@ -32,6 +32,10 @@ def print_invalid_text_warning():
     print("Ignoring article due to invalid body.")
 
 
+def start_classification():
+    Classifier()
+
+
 def scrape_news():
     # Loads the JSON file with news sites
     with open(constants.NEWSPAPERS_PATH) as newspapers_file:
@@ -59,9 +63,7 @@ def scrape_news():
     # Close DB connection
     client.close()
 
-    # TODO: convert the following lines to a method
-    # Start classification of the scraped news
-    Classifier()
+    start_classification()
 
 
 def parse_link(company, info, db):
