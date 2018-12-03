@@ -6,6 +6,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument('website_name')
 parser.add_argument('--link')
 parser.add_argument('--rss')
+parser.add_argument('--path', default='./resources/NewsPapers.json')
 
 args = parser.parse_args()
 
@@ -23,10 +24,10 @@ if args.link:
 if args.rss:
     newspaper_to_add[args.website_name]['rss'] = args.rss
 
-with open('test.json') as f:
+with open(args.path) as f:
     data = json.load(f)
 
 data.update(newspaper_to_add)
 
-with open('test.json', 'w') as f:
+with open(args.path, 'w') as f:
     json.dump(data, f, indent=2)

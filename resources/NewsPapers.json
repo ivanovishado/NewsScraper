@@ -1,10 +1,6 @@
 {
   "elinformador": {
-      "rss": "https://www.informador.mx/rss/ultimas-noticias.xml",
-      "link": "https://www.informador.mx/"
-  },
-  "Vanguardia": {
-    "rss": "https://www.vanguardia.com.mx/rss.xml",
-    "link": "https://vanguardia.com.mx/"
+    "rss": "https://www.informador.mx/rss/ultimas-noticias.xml",
+    "link": "https://www.informador.mx/"
   }
 }
