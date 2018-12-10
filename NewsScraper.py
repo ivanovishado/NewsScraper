@@ -20,16 +20,15 @@ logging.basicConfig(filename=constants.LOG_FILENAME,
                     format='%(asctime)s-%(levelname)s-%(message)s',
                     datefmt='%d-%b-%y %H:%M:%S')
 
-
-# TODO: Asignar timezones pertinentes al estado -- time.localtime().tm_isdst
-# TODO: Crear diccionario temporal para cuando se pierda la conexión con la base de datos
-# TODO: Crear index a partir de datos para evitar registros repetidos (db.profiles.create_index())
+# TODO: Assign timezones accordingly to the region (e.g. Jalisco)
+# TODO: Create a temp dict to use when losing connection to the db
+# TODO: Create index from the data to prevent repeated registers (db.profiles.create_index())
 
 
 def try_to_get_utc(date, link):
     try:
         return datetime.utcfromtimestamp(mktime(date))
-    except Exception as e:
+    except Exception:
         logging.warning(f'Could not get UTC time from {link}', exc_info=True)
         return date
 

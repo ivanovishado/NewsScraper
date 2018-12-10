@@ -20,8 +20,8 @@ from NewsScraper import scrape_news
 
 ScraperScheduler(scrape_news)
 
-# Este prefix solo es para hacer el deployment
-# Volverlo en una cadena vacia si se quiere correr la app localmente
+# This prefix is used for deployment
+# Change it to an empty string for debugging (running the app locally)
 PREFIX = "/news-scraper"
 
 app = Flask(
