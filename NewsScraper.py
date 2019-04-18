@@ -29,12 +29,13 @@ def try_to_get_utc(date, link):
     try:
         return datetime.utcfromtimestamp(mktime(date))
     except Exception:
-        logging.warning(f'Could not get UTC time from {link}', exc_info=True)
+        logging.warning(
+            'Could not get UTC time from {}'.format(link), exc_info=True)
         return date
 
 
 def log_invalid_text(link):
-    logging.warning(f'Ignoring {link} due to invalid body.')
+    logging.warning('Ignoring {} due to invalid body.'.format(link))
 
 
 def start_classification():
@@ -82,7 +83,7 @@ def parse_link(company, info, db):
             article.download()
             article.parse()
         except Exception:
-            logging.warning(f'Could not download/parse {article_link}',
+            logging.warning('Could not download/parse {}'.format(article_link),
                             exc_info=True)
             continue
         # Again, for consistency, if there is no found publish date
@@ -93,7 +94,8 @@ def parse_link(company, info, db):
             none_type_count += 1
             if none_type_count > 10:
                 logging.warning(
-                    f'Skipping {company} because of too many noneType dates...')
+                    'Skipping {} because of too many noneType dates...'.format(
+                        company))
                 break
             article_count += 1
             continue
@@ -134,7 +136,7 @@ def parse_rss(company, info, db):
         except Exception:
             # If the download for some reason fails (ex. 404)
             # the script will continue downloading the next article.
-            logging.warning(f'Could not download/parse {article_link}',
+            logging.warning('Could not download/parse {}'.format(article_link),
                             exc_info=True)
             continue
         article_text = article.text
