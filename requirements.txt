@@ -27,7 +27,7 @@ MarkupSafe==1.0
 matplotlib==2.2.2
 mccabe==0.6.1
 newspaper3k==0.2.6
-nltk==3.2.5
+nltk==3.4.5
 numpy==1.14.3
 pefile==2017.11.5
 Pillow==5.1.0
